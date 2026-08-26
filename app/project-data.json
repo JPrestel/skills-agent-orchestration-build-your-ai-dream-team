@@ -1,0 +1,52 @@
+{
+  "projects": [
+    {
+      "name": "North Star Analytics",
+      "owner": "Maya Chen",
+      "status": "Active",
+      "recentActivity": "Completed stakeholder review for the onboarding metrics dashboard.",
+      "priority": "High",
+      "summary": "Creates a shared view of product adoption and retention signals."
+    },
+    {
+      "name": "Atlas Mobile Refresh",
+      "owner": "Jordan Patel",
+      "status": "At Risk",
+      "recentActivity": "Design QA found navigation regressions on small screens.",
+      "priority": "High",
+      "summary": "Modernizes the mobile experience for field teams and customers."
+    },
+    {
+      "name": "Beacon Support Portal",
+      "owner": "Sam Rivera",
+      "status": "Blocked",
+      "recentActivity": "Waiting on SSO credentials from the identity platform team.",
+      "priority": "Medium",
+      "summary": "Gives support specialists a faster path to customer context."
+    },
+    {
+      "name": "Greenline Cost Review",
+      "owner": "Priya Nair",
+      "status": "Complete",
+      "recentActivity": "Published final savings report and archived planning notes.",
+      "priority": "Low",
+      "summary": "Identifies infrastructure savings opportunities for the next quarter."
+    },
+    {
+      "name": "Launchpad Enablement Kit",
+      "owner": "Alex Morgan",
+      "status": "Active",
+      "recentActivity": "Added partner checklist drafts for the beta cohort.",
+      "priority": "Medium",
+      "summary": "Packages templates and training materials for new product launches."
+    },
+    {
+      "name": "Signal Reliability Sweep",
+      "owner": "Taylor Brooks",
+      "status": "At Risk",
+      "recentActivity": "Alert tuning reduced noisy incidents, but two flaky checks remain.",
+      "priority": "High",
+      "summary": "Improves monitoring confidence before the seasonal traffic spike."
+    }
+  ]
+}

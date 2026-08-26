@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="dashboard">
+    <h1>Project Pulse</h1>
+    <section id="cards" class="project-cards" aria-label="Projects"></section>
+  </main>
+
+  <script>
+    const cardsContainer = document.getElementById('cards');
+    const knownStatuses = new Set(['Active', 'At Risk', 'Blocked', 'Complete']);
+    const knownPriorities = new Set(['High', 'Medium', 'Low']);
+
+    function normalizeModifier(value, allowedValues) {
+      const matchedValue = getCanonicalValue(value, allowedValues);
+
+      if (!matchedValue) {
+        return 'unknown';
+      }
+
+      return matchedValue.toLowerCase().replace(/\s+/g, '-');
+    }
+
+    function getCanonicalValue(value, allowedValues) {
+      if (typeof value !== 'string') {
+        return '';
+      }
+
+      const matchedValue = Array.from(allowedValues).find(
+        (allowedValue) => allowedValue.toLowerCase() === value.trim().toLowerCase()
+      );
+
+      return matchedValue || '';
+    }
+
+    function displayValue(value, fallback) {
+      if (typeof value !== 'string' || value.trim() === '') {
+        return fallback;
+      }
+
+      return value.trim();
+    }
+
+    function clearCards() {
+      cardsContainer.replaceChildren();
+    }
+
+    function renderMessage(message, className) {
+      clearCards();
+      const messageElement = document.createElement('p');
+      messageElement.className = className;
+      messageElement.textContent = message;
+      cardsContainer.append(messageElement);
+    }
+
+    function renderEmptyState() {
+      renderMessage('No projects yet. Add project data to get started.', 'dashboard__empty-state');
+    }
+
+    function renderError(error) {
+      renderMessage(
+        `Unable to load project data. ${error.message}`,
+        'dashboard__error'
+      );
+    }
+
+    function createTextElement(tagName, className, text) {
+      const element = document.createElement(tagName);
+      element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function createProjectCard(project) {
+      const card = document.createElement('article');
+      card.className = 'project-card';
+
+      const header = document.createElement('div');
+      header.className = 'project-card__header';
+
+      const name = createTextElement(
+        'h2',
+        'project-card__name',
+        displayValue(project.name, 'Untitled project')
+      );
+
+      const statusLabel = getCanonicalValue(project.status, knownStatuses) || 'Unknown status';
+      const statusModifier = normalizeModifier(project.status, knownStatuses);
+      const statusBadge = createTextElement('span', 'status-badge', `Status: ${statusLabel}`);
+      statusBadge.classList.add(`status-badge--${statusModifier}`);
+
+      header.append(name, statusBadge);
+
+      const owner = createTextElement(
+        'p',
+        'project-card__owner',
+        `Owner: ${displayValue(project.owner, 'Unassigned')}`
+      );
+
+      const activity = createTextElement(
+        'p',
+        'project-card__activity',
+        `Recent activity: ${displayValue(project.recentActivity, 'No recent activity')}`
+      );
+
+      const priorityLabel = getCanonicalValue(project.priority, knownPriorities) || 'Unknown priority';
+      const priorityModifier = normalizeModifier(project.priority, knownPriorities);
+      const priority = createTextElement('p', 'priority', `Priority: ${priorityLabel}`);
+      priority.classList.add(`priority--${priorityModifier}`);
+
+      card.append(header, owner);
+
+      if (typeof project.summary === 'string' && project.summary.trim() !== '') {
+        const summary = createTextElement(
+          'p',
+          'project-card__summary',
+          project.summary.trim()
+        );
+        card.append(summary);
+      }
+
+      card.append(activity, priority);
+
+      return card;
+    }
+
+    function renderProjects(projects) {
+      clearCards();
+
+      if (projects.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      projects.forEach((project) => {
+        fragment.append(createProjectCard(project || {}));
+      });
+      cardsContainer.append(fragment);
+    }
+
+    async function loadProjects() {
+      try {
+        const response = await fetch('project-data.json');
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}.`);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.projects)) {
+          throw new Error('Expected project-data.json to contain a projects array.');
+        }
+
+        renderProjects(data.projects);
+      } catch (error) {
+        renderError(error);
+      }
+    }
+
+    loadProjects();
+  </script>
+</body>
+</html>
